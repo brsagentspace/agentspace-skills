@@ -59,12 +59,50 @@ security:
 # ─────────────────────────────────────────────
 version_control:
   commit_format: "conventional commits"
+  # Zorunlu tip listesi:
+  # feat:     Yeni özellik
+  # fix:      Hata düzeltme
+  # refactor: Davranış değiştirmeyen kod düzenlemesi
+  # test:     Test ekleme veya düzenleme
+  # docs:     Yalnızca dokümantasyon değişikliği
+  # chore:    Build, config, bağımlılık güncellemeleri
+  # perf:     Performans iyileştirmesi
+  #
   # Örnekler:
-  # feat: kullanıcı login endpoint'i eklendi
-  # fix: JWT token süresi hatalı hesaplanıyor
-  # refactor: auth middleware yeniden düzenlendi
-  # test: login unit testleri eklendi
-  # docs: API dokümantasyonu güncellendi
+  # feat(auth): JWT refresh token mekanizması eklendi
+  # fix(api): kullanıcı listesi endpoint 500 hatası düzeltildi
+  # refactor(db): repository katmanı yeniden düzenlendi
+  # test(auth): login unit testleri eklendi
+  # docs(readme): kurulum adımları güncellendi
+
+  commit_discipline:
+    critical_rule: |
+      Her commit atomik ve anlamlı olmalıdır.
+      "Her şeyi bir arada" commiti yoktur.
+      Bir commit bir iş yapar — ve o işi açıkça anlatır.
+
+    rules:
+      - "Her tamamlanan mantıksal iş birimi → hemen commit"
+      - "Commit mesajı imperative mood (emir kipi): 'eklendi' değil 'ekle'"
+      - "Commit mesajı max 72 karakter (başlık satırı)"
+      - "Birden fazla konu varsa ayrı commitler açılır — bir commit'e sıkıştırılmaz"
+      - "WIP (Work In Progress) commit'i main branch'e gitmez"
+      - "Her commit build'i bozmaz — commit sonrası proje çalışabilir durumda"
+      - "git add -A veya git add . ile körce staging yasak — değişiklikler gözden geçirilir"
+      - "Commit öncesi git diff okunur"
+
+    forbidden:
+      - "'fix', 'update', 'changes', 'misc' gibi belirsiz mesajlar"
+      - "Tek commit'e tüm projeyi doldurmak"
+      - "Debug kodu veya console.log içeren commit"
+      - "Gizli anahtar (API key, token) içeren commit — git history temiz kalır"
+      - ".env dosyasının commit edilmesi"
+
+    commit_size_guide:
+      small:  "1-50 satır — ideal atomik commit"
+      medium: "50-200 satır — kabul edilebilir"
+      large:  "200-400 satır — gerekçe gerektirir"
+      too_big: "400+ satır — parçalanmak zorunda"
 
   branch_strategy:
     main: "Production-ready, direkt push yasak"
