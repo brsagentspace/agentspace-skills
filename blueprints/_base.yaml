@@ -129,6 +129,167 @@ documentation:
     - "Karmaşık algoritmaların üstüne ne yaptığı ve neden tercih edildiği yazılır"
 
 # ─────────────────────────────────────────────
+# EVRENSEL KOD PROFESYONELLİĞİ KURALLARI
+# ─────────────────────────────────────────────
+professional_code:
+  comments:
+    rules:
+      - "Every file starts with a top-level JSDoc/docstring block: purpose, author, date"
+      - "Every exported function has a JSDoc comment: @param, @returns, @throws"
+      - "Complex logic blocks have an inline comment explaining WHY, not WHAT"
+      - "TODO comments are forbidden in committed code — resolve before committing"
+      - "No commented-out dead code — use git history instead"
+
+    format: |
+      /**
+       * @file ComponentName.tsx
+       * @description Brief description of what this file does.
+       * @module components/layout
+       */
+
+      /**
+       * Renders the top navigation bar with project and blueprint selectors.
+       *
+       * @param props - Component props
+       * @returns JSX element
+       */
+
+  naming:
+    typescript:
+      variables:         "camelCase"
+      constants:         "UPPER_SNAKE_CASE"
+      functions:         "camelCase"
+      react_components:  "PascalCase"
+      interfaces:        "PascalCase (no I prefix)"
+      type_aliases:      "PascalCase"
+      enums:             "PascalCase members"
+      css_classes:       "kebab-case (BEM preferred: block__element--modifier)"
+      files_components:  "PascalCase.tsx"
+      files_utilities:   "camelCase.ts"
+      files_constants:   "UPPER_SNAKE_CASE.ts or camelCase.ts"
+
+    python:
+      variables:         "snake_case"
+      constants:         "UPPER_SNAKE_CASE"
+      functions:         "snake_case"
+      classes:           "PascalCase"
+      modules:           "snake_case"
+      private:           "_leading_underscore"
+
+    rust:
+      variables:         "snake_case"
+      constants:         "UPPER_SNAKE_CASE"
+      functions:         "snake_case"
+      types_structs:     "PascalCase"
+      modules:           "snake_case"
+      macros:            "snake_case!"
+
+  formatting:
+    general:
+      - "Consistent indentation: 2 spaces (TS/JS/CSS), 4 spaces (Python/Rust)"
+      - "Max line length: 100 characters"
+      - "Trailing whitespace: none"
+      - "Final newline: always present"
+      - "Blank lines between logical blocks: exactly 1"
+
+    typescript:
+      formatter: "Prettier (config in .prettierrc)"
+      settings:
+        printWidth: 100
+        tabWidth: 2
+        singleQuote: true
+        trailingComma: "es5"
+        semi: true
+        arrowParens: "always"
+
+    python:
+      formatter: "Ruff format (Black-compatible)"
+      settings:
+        line_length: 100
+        indent_width: 4
+
+    rust:
+      formatter: "rustfmt"
+      settings:
+        max_width: 100
+        edition: "2021"
+
+  linting:
+    typescript: "ESLint with @typescript-eslint/recommended"
+    python:     "Ruff lint (replaces flake8 + isort)"
+    rust:       "cargo clippy -- -D warnings"
+    rule: "Zero lint warnings in committed code — warnings are treated as errors in CI"
+
+# ─────────────────────────────────────────────
+# EVRENSEL i18n KURALLARI
+# ─────────────────────────────────────────────
+i18n:
+  critical_rule: |
+    The codebase is written in English.
+    ALL user-facing strings are externalized into locale files from day one.
+    Hard-coded user-facing strings in component code are FORBIDDEN.
+    Adding a new language must require zero code changes — only a new locale file.
+
+  default_language: "en"
+  supported_languages:
+    - code: "en"
+      name: "English"
+      status: "default"
+    - code: "tr"
+      name: "Türkçe"
+      status: "planned"
+
+  stack:
+    library: "i18next + react-i18next"
+    file_format: "JSON"
+    namespace_strategy: "feature-based (common, layout, agents, blueprints...)"
+    interpolation: "{{variable}} syntax"
+    pluralization: "i18next built-in plural rules"
+
+  file_structure: |
+    src/
+      i18n/
+        index.ts              # i18next config and initialization
+        locales/
+          en/
+            common.json       # shared UI strings (buttons, status, errors)
+            layout.json       # top bar, status bar, panels
+            agents.json       # agent names, roles, statuses
+            blueprints.json   # blueprint names and descriptions
+          tr/
+            common.json
+            layout.json
+            agents.json
+            blueprints.json
+
+  key_naming:
+    rule: "Dot-notation, snake_case segments: namespace.section.key"
+    examples:
+      - "common.button.save"
+      - "common.error.network_timeout"
+      - "layout.top_bar.project_label"
+      - "layout.status_bar.agents_active"
+      - "agents.status.working"
+      - "agents.role.architect"
+      - "blueprints.mobile_react_native.name"
+
+  component_usage: |
+    // ✅ Correct
+    const { t } = useTranslation('layout');
+    return <span>{t('top_bar.project_label')}</span>;
+
+    // ❌ Forbidden
+    return <span>Project</span>;
+
+  rules:
+    - "Every new component uses useTranslation() hook — no raw strings"
+    - "Locale JSON keys use snake_case, nested by section"
+    - "Interpolation variables are documented in the JSON value as {{variable}}"
+    - "Missing translation keys must fail visibly in development"
+    - "The en/ locale is the source of truth — other locales are translations of it"
+    - "Locale files are sorted alphabetically by key to minimize merge conflicts"
+
+# ─────────────────────────────────────────────
 # EVRENSEL TASARIM SÜRECİ KURALLARI
 # (1-1 kopya değil — süreç standartları)
 # ─────────────────────────────────────────────
